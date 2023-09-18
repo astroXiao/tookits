@@ -62,10 +62,11 @@ def get_bibtex_from_ads(bibstem, volume, page, verbose=False):
         pattern = r'@[A-Z]+{.+\\n}\\n\\n'
         export = re.search(pattern, citetext.text)
         bibtex = export.group()
+        bibtex_with_newline = bibtex.replace("\\n", "\n")
         if verbose:
             print("Successfully get the bibtex ...\n\n")
-            print("")
-        print(bibtex)
+        print("")
+        print(bibtex_with_newline)
     else:
         print(f"Failed to get the bibcode, status_code = {citetext.status_code}")
 
