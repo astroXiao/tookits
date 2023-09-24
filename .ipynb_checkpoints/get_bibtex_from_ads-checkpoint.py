@@ -3,6 +3,7 @@ import os
 import re
 import json
 import argparse
+from urllib.parse import quote
 
 class ArgumentError(Exception):
     pass
@@ -62,11 +63,14 @@ def get_bibtex_from_ads(bibstem, volume, page, verbose=False):
         pattern = r'@[A-Z]+{.+\\n}\\n\\n'
         export = re.search(pattern, citetext.text)
         bibtex = export.group()
-        bibtex_with_newline = bibtex.replace("\\n", "\n")
+        # remove some escape character
+        bibtex = bibtex.replace("\\n", "\n")
+        bibtex = bibtex.replace('\\"', '"')
+        bibtex = bibtex.replace('\\\\"', '\\')
         if verbose:
             print("Successfully get the bibtex ...\n\n")
         print("")
-        print(bibtex_with_newline)
+        print(bibtex)
     else:
         print(f"Failed to get the bibcode, status_code = {citetext.status_code}")
 
@@ -82,7 +86,7 @@ if __name__ == '__main__':
     
     # Deal with some special characters like &
     # They need to be converted to url encoding to correctly get the bibcode
-    bibstem_url = args.bibstem.replace("&", "%26")
+    bibstem_url = quote(args.bibstem)
     
     if (args.bibstem==None) or (args.volume==None) or (args.page==None):
         raise ArgumentError("Arguments not complete! Please provide bibstem, volume, and page")
